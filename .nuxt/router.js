@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import { interopDefault } from './utils'
 
-const _e6795c5c = () => interopDefault(import('..\\pages\\projects.vue' /* webpackChunkName: "pages_projects" */))
+const _6bf309c1 = () => interopDefault(import('..\\pages\\login.vue' /* webpackChunkName: "pages_login" */))
 const _77715099 = () => interopDefault(import('..\\pages\\project\\_id.vue' /* webpackChunkName: "pages_project__id" */))
 const _bb6932ac = () => interopDefault(import('..\\pages\\index.vue' /* webpackChunkName: "pages_index" */))
 
@@ -81,9 +81,9 @@ export function createRouter() {
     scrollBehavior,
 
     routes: [{
-      path: "/projects",
-      component: _e6795c5c,
-      name: "projects"
+      path: "/login",
+      component: _6bf309c1,
+      name: "login"
     }, {
       path: "/project/:id?",
       component: _77715099,

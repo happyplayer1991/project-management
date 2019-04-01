@@ -1,42 +1,80 @@
 <template>
-  <div class="container bg-light-dark" v-if="!$store.state.authUser">
-    <h1>LOGIN</h1>
-    <form @submit.prevent="login">
-      <p v-if="formError" class="error">
-        {{ formError }}
-      </p>
-      <div class="form-group">
-        <input v-model="formUsername" type="text" class="form-control" name="username" placeholder="Email">
+  <div class="home">
+    <nav class="navbar">
+      <div class="container-fluid">
+        <ul class="nav navbar-nav navbar-right">
+          <li><NuxtLink to="/">PROJECTS</NuxtLink></li>
+          <li><NuxtLink to="/login" @click.native="logout">LOGOUT</NuxtLink></li>
+        </ul>
       </div>
-      <div class="form-group">
-        <input v-model="formPassword" type="password" class="form-control" name="password" placeholder="Password">
+    </nav>
+    <div class="container projects">
+      <div class="project" v-for="project in projects" :key="project.id">
+        <div class="item logo" v-if="project.logo_url">
+          <img src="https://wallazee.global.ssl.fastly.net/images/variant/20190320-f52dd4bb9bc480dd6714d14d35f0771777f8826be1d49530fa3db29-200.png">
+        </div>
+        <div class="item logo" v-else>
+          <img src="~/assets/no-logo-available.gif">
+        </div>
+        <div class="item name">
+          <NuxtLink to="/">{{ project.name }}</NuxtLink>
+        </div>
+        <div class="item active">
+          <p v-if="project.active">Active</p>
+          <p v-else>Inactive</p>
+        </div>
+        <div class="item time">
+          <p>this time week <span>{{ project.spent_time_week }}</span></p>
+          <p>this month <span>{{ project.spent_time_month }}</span></p>
+          <p>total <span>{{ project.spent_time_all }}</span></p>
+        </div>
       </div>
-      <button type="submit" class="btn btn-lg btn-light-blue font-weight-bold">LOGIN</button>
-    </form>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-  data() {
-    return {
-      formError: null,
-      formUsername: '',
-      formPassword: ''
+  async asyncData ({ store }) {
+    // return { projects: [
+    //           {
+    //               "id": 296,
+    //               "name": "Project Name API change",
+    //               "uid": "main",
+    //               "logo_url": null,
+    //               "position": 1,
+    //               "is_active": 1,
+    //               "is_owner_watcher": 1,
+    //               "spent_time_week": 0,
+    //               "spent_time_month": 0,
+    //               "spent_time_all": 0,
+    //               "users": []
+    //           }
+    //     ]
+    // };
+    let { data } = await axios({
+            method: 'get',
+            url: 'https://api.quwi.com/v2/projects-manage/index',
+            headers: {
+              'Authorization': `Bearer ${store.state.token}`
+            },
+            validateStatus: (status) => {
+              return true;
+            },
+          })
+    return { projects: data }
+  },
+  fetch ({ store, redirect }) {
+    if (!store.state.authUser) {
+      return redirect('/')
     }
   },
   methods: {
-    async login() {
+    async logout() {
       try {
-        await this.$store.dispatch('login', {
-          username: this.formUsername,
-          password: this.formPassword
-        })
-
-        this.formUsername = ''
-        this.formPassword = ''
-        this.formError = null
-        this.$router.push('/projects')
+        await this.$store.dispatch('logout')
       } catch (e) {
         this.formError = e.message
       }
@@ -46,6 +84,10 @@ export default {
 </script>
 
 <style>
+body {
+  margin: 0;
+  background-color: #f4f4f4;
+}
 .container {
   font-family: sans-serif;
   width: 100%;
@@ -74,63 +116,88 @@ export default {
     max-width: 540px;
   }
 }
-.error {
-  color: red;
+.navbar {
+  border-radius: 4px;
+  position: relative;
+  min-height: 50px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #959595;
+  background-color: #fafafa;
 }
-.form-group {
-  display: flex;
-  margin-bottom: 1rem;
+.container-fluid {
+  height: 50px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
 }
-.form-control {
+.nav {
+  list-style: none;
+}
+.navbar-right {
+  float: right!important;
+  margin-right: -15px;
+}
+.navbar-nav {
+  margin: 0;
+}
+.navbar-nav>li {
+  float: left;
+}
+.navbar-nav>li>a {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.nav>li>a {
+  position: relative;
   display: block;
-  width: 100%;
-  height: calc(1.5em + .75rem + 2px);
-  padding: .375rem .75rem;
-  font-size: 1rem;
+}
+a {
+  margin-right: 20px;
+  font-size: 14px;
+  color: #999;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  transition: color .25s;
   font-weight: 400;
-  line-height: 1.5;
-  color: #495057;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid #ced4da;
-  border-radius: .25rem;
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  line-height: normal;
 }
-.btn {
-  display: inline-block;
-  font-weight: 400;
-  color: #212529;
-  text-align: center;
-  vertical-align: middle;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background-color: transparent;
-  border: 1px solid transparent;
-  padding: .375rem .75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  border-radius: .25rem;
-  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+a:hover {
+  color: #333;
 }
-.btn-lg {
-  width: 150px;
-  padding: .5rem 1rem;
-  font-size: 1.25rem;
-  line-height: 1.5;
-  border-radius: .3rem;
+.projects {
+  margin-top: 20px !important;
 }
-.btn-light-blue {
-  cursor: pointer;
-  color: #fff;
-  background-color: #395378;
-  border-color: #395378;
+.project {
+  padding: 15px;
+  background-color: #ffffff;
+  border: 1px solid #f4f4f4;
+  display: grid;
+  grid-template-columns: 15% 30% 25% 30%;
 }
-.bg-light-dark {
-  background: #f4f4f4;
+.project .item {
+  padding: 10px;
 }
-.font-weight-bold {
-  font-weight: 600;
+.project .logo img {
+  width: 50px;
+  height: 50px;
+}
+.project .name p {
+  font-size: 12px;
+}
+.project .time {
+  display: grid;
+  grid-template-rows: 33% 33% 33%;
+}
+.project .time p {
+  font-size: 10px;
+  margin: 0;
+}
+.project .time p span {
+  float: right;
 }
 </style>
