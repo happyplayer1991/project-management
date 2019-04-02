@@ -35,36 +35,22 @@
 
 <script>
 import axios from 'axios'
+const cookie = require('js-cookie');
 
 export default {
   async asyncData ({ store }) {
-    // return { projects: [
-    //           {
-    //               "id": 296,
-    //               "name": "Project Name API change",
-    //               "uid": "main",
-    //               "logo_url": null,
-    //               "position": 1,
-    //               "is_active": 1,
-    //               "is_owner_watcher": 1,
-    //               "spent_time_week": 0,
-    //               "spent_time_month": 0,
-    //               "spent_time_all": 0,
-    //               "users": []
-    //           }
-    //     ]
-    // };
     let { data } = await axios({
-            method: 'get',
-            url: 'https://api.quwi.com/v2/projects-manage/index',
-            headers: {
-              'Authorization': `Bearer ${store.state.token}`
-            },
-            validateStatus: (status) => {
-              return true;
-            },
-          })
-    return { projects: data }
+        method: 'get',
+        url: 'https://api.quwi.com/v2/projects-manage/index',
+        headers: {
+          'Authorization': `Bearer ${store.state.token}`
+          // 'Authorization': 'Bearer 0931991d7c6308a242ffd8722850eaa6'
+        },
+        validateStatus: (status) => {
+          return true;
+        },
+    })
+    return { projects: data.projects }
   },
   fetch ({ store, redirect }) {
     if (!store.state.authUser) {
@@ -74,6 +60,7 @@ export default {
   methods: {
     async logout() {
       try {
+        // cookie.remove('token')
         await this.$store.dispatch('logout')
       } catch (e) {
         this.formError = e.message
@@ -84,10 +71,6 @@ export default {
 </script>
 
 <style>
-body {
-  margin: 0;
-  background-color: #f4f4f4;
-}
 .container {
   font-family: sans-serif;
   width: 100%;

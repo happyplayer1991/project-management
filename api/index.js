@@ -35,10 +35,12 @@ router.post('/login', (req, res) => {
     },
   })
   .then((response) => {
+    /*
     req.session.authUser = { 
       username: response.data.app_init.user.name, 
       token: response.data.token 
     }
+    */
     return res.json({ 
       username: response.data.app_init.user.name, 
       token: response.data.token 

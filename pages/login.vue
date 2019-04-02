@@ -17,6 +17,7 @@
 </template>
 
 <script>
+
 export default {
   data() {
     return {
@@ -25,6 +26,7 @@ export default {
       formPassword: ''
     }
   },
+  middleware: 'notAuthenticated',
   methods: {
     async postLogin() {
       try {
@@ -32,10 +34,6 @@ export default {
           username: this.formUsername,
           password: this.formPassword
         })
-
-        this.formUsername = ''
-        this.formPassword = ''
-        this.formError = null
         this.$router.push('/')
       } catch (e) {
         this.formError = e.message
@@ -46,6 +44,38 @@ export default {
 </script>
 
 <style>
+body {
+  margin: 0;
+  background-color: #f4f4f4;
+}
+.container {
+  font-family: sans-serif;
+  width: 100%;
+  padding: 25px 50px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 100px;
+}
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
 .error {
   color: red;
 }
