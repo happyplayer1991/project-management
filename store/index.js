@@ -13,6 +13,7 @@ export const mutations = {
       state.authUser = user
       state.token = user.token
       cookie.set('token', user.token)
+      console.log('test')
     }
     else {
       state.authUser = null
